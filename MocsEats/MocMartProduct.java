@@ -8,6 +8,23 @@ public class MocMartProduct {
 	
 	private static int numProducts;
 	
+	public MocMartProduct(String[] userCmd) {
+		// "ADDITEM", "4011", "USA_FLAG", "10.99", "1", "7"
+		this.itemNum = Integer.parseInt(userCmd[1]);
+		this.itemName = userCmd[2];
+		this.itemPrice = Double.parseDouble(userCmd[3]);
+		this.quantity = Integer.parseInt(userCmd[4]);
+		this.restockQuantity = Integer.parseInt(userCmd[5]);
+	}
+	
+	public MocMartProduct(int itemNum, String itemName, double itemPrice, int quantity, int restockQuantity) {
+		this.itemNum = itemNum;
+		this.itemName = itemName;
+		this.itemPrice = itemPrice;
+		this.quantity = quantity;
+		this.restockQuantity = restockQuantity;
+	}
+
 	public void setItemNum(int itemNum) {
 		this.itemNum = itemNum;
 	}
