@@ -23,21 +23,27 @@ public class MoctMart {
 			if (userCmds[0].equals("ADDITEM")) {
 				addItem(userCmds, products);
 			}
+			
 			if (userCmds[0].equals("FINDITEM")) {
 				findItem(userCmds, products);
 			}
+			
 			if (userCmds[0].equals("RESTOCK")) {
 				restock(userCmds, products);
 			}
+			
 			if (userCmds[0].equals("CUSTOMER")) {
 				customer(userCmds, products, sales);
 			}
+			
 			if (userCmds[0].equals("INVENTORY")) {
 				inventory(userCmds, products);
 			}
+			
 			if (userCmds[0].equals("PRINTSUMMARY")) {
 				printSummary(userCmds, products);
 			}
+			
 			else {
 				if (userCmds[0].equals("QUIT")) {
 					break;
@@ -63,15 +69,56 @@ public class MoctMart {
 		
 		//Insert where this new product at the correct spot
 		
+		
 	
 	}
 	
 	private static void findItem(String[] userCmd, MocMartProduct[] products) {
-		//
+		//This command will be followed by an ID
+		int count = 0;
+		int itemID = Integer.parseInt(userCmd[1]); //Convert the ID string into int
+		String itemName = userCmd[3];
+		String binSer = "Performing Binary Search... ";
+		
+		int low = 0;
+		int mid;
+		int high = products.length - 1;
+		
+		//Start the Binary Search
+		while (low <= high) {
+			mid = low + (high - low) / 2;
+			
+			if (products[mid].getItemNum() == itemID) {
+				System.out.printf("Item #%d (%s)\n", products[mid].getItemNum(), products[mid].getItemName());
+				System.out.printf("Price            :  $%.2f%n", products[mid].getItemPrice());
+				System.out.printf("Current Quantity :  $%.2f%n", products[mid].getQuantity());
+				//System.out.printf("Units Sold       :  $%.2f%n", products[mid].get);
+				System.out.printf("Total Amount     :  $%.2f%n", products[mid].getItemPrice());
+			
+				count++;
+			}
+			else if (products[mid].getItemNum() < itemID) {
+				low = mid + 1;
+			}
+			else if (products[mid].getItemNum() > itemID) {
+				high = mid - 1;
+			}
+			else {
+				System.out.print("This item was not found as a product.");
+			}
+			
+		
+		}
+	
 	}
 	
 	private static void restock(String[] userCmd, MocMartProduct[] products) {
-		//
+		//Loop through the array and find which stock is 0, then reset if needed using restockQuantity
+		for (int i = 0; i < products.length; i++) {
+			if (products[i].getQuantity() == 0) {
+				//Reset using restockQuantity??
+			}
+		}
 	}
 	
 	private static void customer(String[] userCmd, MocMartProduct[] products, MocMartSale[] sales) {
@@ -86,10 +133,14 @@ public class MoctMart {
 	private static void inventory(String[] userCmd, MocMartProduct[] products) {
 		//Print out the remaining products from the products array
 		//Don't forget the format in the PDF
+		
+		
 	}
 	
 	private static void printSummary(String[] userCmd, MocMartProduct[] products) {
 		//Print out all the sales from the sales array
-		//Don't forget the format in the PDF aswell
+		//Don't forget the format in the PDF as well
+		
+		
 	}
 }
