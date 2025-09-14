@@ -7,6 +7,18 @@ public class MocMartSale {
 	
 	private static int numSales;
 	
+	public MocMartSale(String[] userCmd) {
+		this.firstName = userCmd[1];
+		this.lastName = userCmd[2];
+	}
+	
+	public MocMartSale(String firstName, String lastName, int[] itemsPurchased) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.itemsPurchased = itemsPurchased;
+	}
+	
+	
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
