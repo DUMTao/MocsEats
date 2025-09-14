@@ -15,6 +15,7 @@ public class MocMartProduct {
 		this.itemPrice = Double.parseDouble(userCmd[3]);
 		this.quantity = Integer.parseInt(userCmd[4]);
 		this.restockQuantity = Integer.parseInt(userCmd[5]);
+		numProducts++;
 	}
 	
 	public MocMartProduct(int itemNum, String itemName, double itemPrice, int quantity, int restockQuantity) {
@@ -23,6 +24,8 @@ public class MocMartProduct {
 		this.itemPrice = itemPrice;
 		this.quantity = quantity;
 		this.restockQuantity = restockQuantity;
+		
+		numProducts++;
 	}
 
 	public void setItemNum(int itemNum) {

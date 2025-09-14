@@ -5,17 +5,21 @@ public class MocMartSale {
 	private int numItemsOnList;
 	private int[] itemsPurchased;
 	
-	private static int numSales;
+	private static int numSales = 0;
 	
 	public MocMartSale(String[] userCmd) {
 		this.firstName = userCmd[1];
 		this.lastName = userCmd[2];
+		
+		numSales++;
 	}
 	
 	public MocMartSale(String firstName, String lastName, int[] itemsPurchased) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.itemsPurchased = itemsPurchased;
+		
+		numSales++;
 	}
 	
 	
