@@ -101,7 +101,10 @@ public class MocMart {
 	
 	
 	private static void findItem(String[] userCmd, MocMartProduct[] products) {
-		
+		if (products == null) {
+	        System.out.println("    Cannot perform command; there are no items in the product database.");
+	        return;
+	    }
 		
 		//This command will be followed by an ID
 		int itemID = Integer.parseInt(userCmd[1]); //Convert the ID string into int
@@ -119,11 +122,6 @@ public class MocMart {
 		while (low <= high) {
 			mid = low + (high - low) / 2;
 			binSer += mid + " ";
-			
-			if (products[mid] == null) {
-				System.out.println("    Cannot perform command; there are no items in the product database.");
-				return;
-			}
 			
 			if (products[mid] != null && products[mid].getItemNum() == itemID) {
 				System.out.println(binSer.trim() + " )");
@@ -163,9 +161,8 @@ public class MocMart {
 		
 		}
 		
-		System.out.println(binSer.trim() + " )");
 		//If this gets printed, the item wasn't found
-		System.out.printf("    Item  #%d was not found in the product database.", itemID);
+		System.out.printf("    Item #%d was not found in the product database.%n", itemID);
 	
 	}
 	
