@@ -94,13 +94,15 @@ public class MocMart {
 		size++;
 		products[insertionIndex] = newPrd;
 		
-		System.out.printf("\tItem #%d, %s, with a cost of $%.2f and initial stock of %d, has been added to the product database.\n",
+		System.out.printf("    Item %d, %s, with a cost of $%.2f and initial stock of %d, has been added to the product database.\n",
 				products[insertionIndex].getItemNum(), products[insertionIndex].getItemName(), products[insertionIndex].getItemPrice(), products[insertionIndex].getQuantity());
 		
 	}
 	
 	
 	private static void findItem(String[] userCmd, MocMartProduct[] products) {
+		
+		
 		//This command will be followed by an ID
 		int itemID = Integer.parseInt(userCmd[1]); //Convert the ID string into int
 		int units = 0;
@@ -109,20 +111,25 @@ public class MocMart {
 		int low = 0;
 		int mid;
 		int high = MocMartProduct.getNumProducts() - 1;
-		String binSer = "Performing Binary Search...(Indices searched: ";
+		String binSer = "    Performing Binary Search...(Indices viewed: ";
+		
+		
 		
 		//Start the Binary Search
 		while (low <= high) {
 			mid = low + (high - low) / 2;
 			binSer += mid + " ";
 			
-			//doesnt work
+			if (products[mid] == null) {
+				System.out.println("    Cannot perform command; there are no items in the product database.");
+				return;
+			}
+			
 			if (products[mid] != null && products[mid].getItemNum() == itemID) {
-				System.out.println("\t" + binSer.trim() + ")");
-				
-				System.out.printf("\tItem #%d (%s)\n", products[mid].getItemNum(), products[mid].getItemName());
-				System.out.printf("\tPrice            :  $%.2f%n", products[mid].getItemPrice());
-				System.out.printf("\tCurrent Quantity :  %d%n", products[mid].getQuantity());
+				System.out.println(binSer.trim() + " )");
+				System.out.printf("    Item #%d (%s)\n", products[mid].getItemNum(), products[mid].getItemName());
+				System.out.printf("    Price            :  $%.2f%n", products[mid].getItemPrice());
+				System.out.printf("    Current Quantity :  %d%n", products[mid].getQuantity());
 				
 				if (sales != null) {
 					for (MocMartSale sale : sales) {
@@ -141,8 +148,8 @@ public class MocMart {
 					}
 				}
 			
-				System.out.printf("\tUnits Sold       :  %d%n", units);
-				System.out.printf("\tTotal Amount     :  $%.2f%n", total);
+				System.out.printf("    Units Sold       :  %d%n", units);
+				System.out.printf("    Total Amount     :  $%.2f%n", total);
 				return;
 				
 			}
@@ -156,8 +163,9 @@ public class MocMart {
 		
 		}
 		
+		System.out.println(binSer.trim() + " )");
 		//If this gets printed, the item wasn't found
-		System.out.println("\tCannot perform command; there are no items in the product database.");
+		System.out.printf("    Item  #%d was not found in the product database.", itemID);
 	
 	}
 	
@@ -171,7 +179,7 @@ public class MocMart {
 				isEmpty = false;
 				products[i].setQuantity(products[i].getRestockQuantity());
 			
-				System.out.printf("\tItem %d, %s, restocked to a quantity of %d\n",
+				System.out.printf("    Item %d, %s, restocked to a quantity of %d.\n",
 						products[i].getItemNum(), 
 						products[i].getItemName(), 
 						products[i].getRestockQuantity());
@@ -179,7 +187,7 @@ public class MocMart {
 		}
 		
 		if (isEmpty) {
-			System.out.println("\tThere are no items to restock.");
+			System.out.println("    There are no items to restock.");
 		}
 	}
 	
@@ -232,7 +240,7 @@ public class MocMart {
 		}
 		
 		if (purchase) {
-			System.out.printf("\tCustomer %s %s came and made some purchases.\n", 
+			System.out.printf("    Customer %s %s came and made some purchases.\n", 
 					firstName, lastName);
 			
 			//Create the object and save it as a sale in the array
@@ -247,7 +255,7 @@ public class MocMart {
 			}
 		}
 		else {
-			System.out.printf("\tCustomer %s %s came and made no purchases.\n", 
+			System.out.printf("    Customer %s %s came and made no purchases.\n", 
 					firstName, lastName);
 		}
 		
@@ -262,11 +270,11 @@ public class MocMart {
 		for (int i = 0; i < products.length; i++) {
 			if (products[i] != null) {
 				if (isEmpty) {
-					System.out.println("\tContains the following item(s):");
+					System.out.println("    Contains the following items:");
 					isEmpty = false;
 				}
 				
-				System.out.printf("\t| Item #%7d | %-20s | $%6.2f | %4d unit(s) |\n", 
+				System.out.printf("    | Item%7d | %-20s | $ %6.2f |    %4d unit(s) |\n", 
 						products[i].getItemNum(), 
 						products[i].getItemName(), 
 						products[i].getItemPrice(), 
@@ -276,7 +284,7 @@ public class MocMart {
 		}
 		
 		if (isEmpty) {
-			System.out.println("\tContains no items.");
+			System.out.println("    Contains no items.");
 		}
 		
 		
@@ -309,7 +317,7 @@ public class MocMart {
 				totalItems += userItems[n];
 			}
 				
-			System.out.printf("\tSale #%d, %s %s purchased %d items(s):\n", 
+			System.out.printf("    Sale #%d, %s %s purchased %d item(s):\n", 
 					i + 1,
 					firstName.toUpperCase(), 
 					lastName.toUpperCase(), 
@@ -329,7 +337,7 @@ public class MocMart {
 							String name = product.getItemName();
 							saleTotal += price * qty;
 								
-							System.out.printf("\t\t| Item #%6d | %-20s | $%6.2f | (x%4d) |\n", 
+							System.out.printf("        | Item  %6d | %-20s | $ %6.2f |  (x%4d) |\n", 
 									itemNum, 
 									name, 
 									price, 
@@ -340,16 +348,16 @@ public class MocMart {
 				}	
 			}
 				
-			System.out.printf("\t\tTotal: $%.2f\n", saleTotal);
+			System.out.printf("        Total: $%.2f\n", saleTotal);
 			grandTotal += saleTotal;
 			
 		}
 		
 		if (validSale) {
-			System.out.printf("\tGrand Total: $%.2f\n", grandTotal);
+			System.out.printf("    Grand Total: $%.2f\n", grandTotal);
 		}
 		else {
-			System.out.println("\tThere are no sales to print.");
+			System.out.println("    There are no sales to print.");
 		}
 	}
 }
