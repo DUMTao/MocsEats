@@ -13,8 +13,8 @@ public class MocMart {
 		String[] userCmds;
 		
 		
-		MocMartProduct[] products = new MocMartProduct[maxProducts];
-		MocMartSale[] sales = new MocMartSale[maxSales];
+		products = new MocMartProduct[maxProducts];
+		sales = new MocMartSale[maxSales];
 		
 		//Create a loop to read the input, check the command
 		//Break con is the word 'quit'
@@ -104,6 +104,7 @@ public class MocMart {
 		//This command will be followed by an ID
 		int itemID = Integer.parseInt(userCmd[1]); //Convert the ID string into int
 		int units = 0;
+		double total = 0.0;
 		
 		int low = 0;
 		int mid;
@@ -115,6 +116,7 @@ public class MocMart {
 			mid = low + (high - low) / 2;
 			binSer += mid + " ";
 			
+			//doesnt work
 			if (products[mid] != null && products[mid].getItemNum() == itemID) {
 				System.out.println("\t" + binSer.trim() + ")");
 				
@@ -122,13 +124,27 @@ public class MocMart {
 				System.out.printf("\tPrice            :  $%.2f%n", products[mid].getItemPrice());
 				System.out.printf("\tCurrent Quantity :  %d%n", products[mid].getQuantity());
 				
-				if (sales == null || sales.length == 0 || sales[0] == null) {
-					System.out.printf("\tUnits Sold       :  %d%n", units);
-					System.out.printf("\tTotal Amount     :  $%.2f%n", 0.0);
-					return; //Get out of the method after the item was found
+				if (sales != null) {
+					for (MocMartSale sale : sales) {
+						if (sale != null) {	
+							int[] items = sale.getItemsPurchased();
+							for (int i = 0; i < items.length - 1; i += 2) {
+								int itemNum = items[i];
+								int qty = items[i + 1];
+								
+								if (itemNum == itemID) {
+									units += qty;
+									total += qty * products[mid].getItemPrice();
+								}
+							}
+						}
+					}
 				}
 			
+				System.out.printf("\tUnits Sold       :  %d%n", units);
+				System.out.printf("\tTotal Amount     :  $%.2f%n", total);
 				return;
+				
 			}
 			else if (products[mid].getItemNum() < itemID) {
 				low = mid + 1;
@@ -171,9 +187,14 @@ public class MocMart {
 	private static void customer(String[] userCmd, MocMartProduct[] products, MocMartSale[] sales) {
 		String firstName = userCmd[1];
 		String lastName = userCmd[2];
-		int prdNum = Integer.parseInt(userCmd[3]) / 2;
+		
+		int prdNum = (userCmd.length - 4) / 2;
 		int[] itemsPurchased = new int[prdNum * 2];
 		boolean purchase = false;
+		
+		if (userCmd.length != 4 + prdNum * 2) {
+			return;
+		}
 		
 		//Check if customer name is more than 20
 		if (firstName.length() > 20 || lastName.length() > 20) {
@@ -188,21 +209,26 @@ public class MocMart {
 			
 			int itemNum = Integer.parseInt(userCmd[index]);
 			int userQty = Integer.parseInt(userCmd[qty]);
+			
 			itemsPurchased[i * 2] = itemNum;
 			itemsPurchased[i * 2 + 1] = 0;
 			
 			//Check if the product has stock and if it exists
 			for (MocMartProduct product : products) {
 				if (product != null && product.getItemNum() == itemNum) {
+					int allowedQty = Math.min(product.getQuantity(), userQty);
+					
 					//Handle the quantity from the product
-					if (product.getQuantity() >= userQty) {
-						itemsPurchased[i * 2 + 1] = userQty;
-						product.setQuantity(product.getQuantity() - userQty);
+					if (allowedQty > 0) {
+						itemsPurchased[i * 2 + 1] = allowedQty;
+						product.setQuantity(product.getQuantity() - allowedQty);
 						purchase = true;
+						
 					}
-					break; //This is to stop searching after product is found
+					break;
 				}
 			}
+			
 		}
 		
 		if (purchase) {
@@ -211,6 +237,8 @@ public class MocMart {
 			
 			//Create the object and save it as a sale in the array
 			MocMartSale sale = new MocMartSale(firstName, lastName, itemsPurchased);
+			
+			
 			for (int k = 0; k < sales.length; k++) {
 				if (sales[k] == null) {
 					sales[k] = sale;
@@ -231,11 +259,13 @@ public class MocMart {
 		//Check if the list is empty or not
 		boolean isEmpty = true;
 		
-		
 		for (int i = 0; i < products.length; i++) {
 			if (products[i] != null) {
-				isEmpty = false;
-				System.out.println("\tContains the following item(s):");
+				if (isEmpty) {
+					System.out.println("\tContains the following item(s):");
+					isEmpty = false;
+				}
+				
 				System.out.printf("\t| Item #%7d | %-20s | $%6.2f | %4d unit(s) |\n", 
 						products[i].getItemNum(), 
 						products[i].getItemName(), 
@@ -249,94 +279,77 @@ public class MocMart {
 			System.out.println("\tContains no items.");
 		}
 		
-		//Don't forget the format in the PDF
-		
 		
 	}
 	
 	//WORKS
 	private static void printSummary() {
-		boolean isEmpty = true;
 		double grandTotal = 0.0;
-		
-		//Exit before running the loop so I don't get a null exception error ;-;
-		if (MocMartSale.getNumSales() == 0) {
-			System.out.println("\tThere are no sales to print.");
-			return;
-		}
-		
-		//Check for valid sales before printing
 		boolean validSale = false;
-		for (int o = 0; o < sales.length; o++) {
-			if (sales[o] != null) {
-				validSale = true;
-				break;
-			}
-		}
-		
-		if (!validSale) {
-			System.out.println("\tThere are no sales to print.");
-			return;
-		}
 		
 		System.out.println("Moc Mart Sales Report:");
+		
 		for (int i = 0; i < sales.length; i++) {
+			MocMartSale sale = sales[i];
+			if (sale == null) {
+				continue;
+			}
+			
+			validSale = true;
 			//Run if the sale isn't null
-			if (sales[i] != null) {
-				MocMartSale sale = sales[i];
-				String firstName = sale.getFirstName();
-				String lastName = sale.getLastName();
-				int[] userItems = sale.getItemsPurchased();
+			String firstName = sale.getFirstName();
+			String lastName = sale.getLastName();
+			int[] userItems = sale.getItemsPurchased();
 				
-				int totalItems = 0;
-				double saleTotal = 0.0;
+			int totalItems = 0;
+			double saleTotal = 0.0;
+			
+			
+			for (int n = 1; n < userItems.length; n += 2) {
+				totalItems += userItems[n];
+			}
 				
-				for (int n = 1; n < userItems.length; n += 2) {
-					totalItems += userItems[n];
-				}
-				
-				System.out.printf("\tSale #%d, %s %s purchased %d items(s):\n", 
-						i + 1,
-						firstName.toUpperCase(), 
-						lastName.toUpperCase(), 
-						totalItems);
+			System.out.printf("\tSale #%d, %s %s purchased %d items(s):\n", 
+					i + 1,
+					firstName.toUpperCase(), 
+					lastName.toUpperCase(), 
+					totalItems);
 				
 				//Loop to print the lines now
-				for (int k = 0; k < userItems.length - 1; k += 2) {
-					int itemNum = userItems[k];
-					int qty = userItems[k + 1];
+			for (int k = 0; k < userItems.length - 1; k += 2) {
+				int itemNum = userItems[k];
+				int qty = userItems[k + 1];
 					
-					//Run if the qty is greater than 0
-					if (qty > 0) {
-						//Search the product by ID
-						for (int l = 0; l < products.length; l++) {
-							if (products[l] != null && products[l].getItemNum() == itemNum) {
-								MocMartProduct product = products[l];
-								double price = product.getItemPrice();
-								String name = product.getItemName();
-								saleTotal += price * qty;
+				//Run if the qty is greater than 0
+				if (qty > 0) {
+					//Search the product by ID
+					for (MocMartProduct product : products) {
+						if (product != null && product.getItemNum() == itemNum) {
+							double price = product.getItemPrice();
+							String name = product.getItemName();
+							saleTotal += price * qty;
 								
-								System.out.printf("\t\t| Item #%6d | %-20s | $%6.2f | (x%4d) |\n", 
-										itemNum, 
-										name, 
-										price, 
-										qty);
-								break; //End if there aren't any more sales recorded
-							}
+							System.out.printf("\t\t| Item #%6d | %-20s | $%6.2f | (x%4d) |\n", 
+									itemNum, 
+									name, 
+									price, 
+									qty);
+							break; //End if there aren't any more sales recorded
 						}
-					}	
-				}
-				
-				System.out.printf("\t\tTotal: $%.2f\n", saleTotal);
-				grandTotal += saleTotal;
-				isEmpty = false;
-			
+					}
+				}	
 			}
+				
+			System.out.printf("\t\tTotal: $%.2f\n", saleTotal);
+			grandTotal += saleTotal;
+			
 		}
 		
-		if (!isEmpty) {
+		if (validSale) {
 			System.out.printf("\tGrand Total: $%.2f\n", grandTotal);
 		}
-	
+		else {
+			System.out.println("\tThere are no sales to print.");
+		}
 	}
 }
