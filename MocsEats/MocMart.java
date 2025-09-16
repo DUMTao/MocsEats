@@ -100,12 +100,7 @@ public class MocMart {
 	}
 	
 	
-	private static void findItem(String[] userCmd, MocMartProduct[] products) {
-		if (products == null || products.length == 0) {
-			System.out.println("    Cannot perform command; there are no items in the product database.");
-        	return;
-		}	
-		
+	private static void findItem(String[] userCmd, MocMartProduct[] products) {	
 		//This command will be followed by an ID
 		int itemID = Integer.parseInt(userCmd[1]); //Convert the ID string into int
 		int units = 0;
@@ -116,6 +111,10 @@ public class MocMart {
 		int high = MocMartProduct.getNumProducts() - 1;
 		String binSer = "    Performing Binary Search...(Indices viewed: ";
 		
+		if (MocMartProduct.getNumProducts() == 0 || products == null) {
+			System.out.println("    Cannot perform command; there are no items in the product database.");
+			return;
+		}
 		
 		
 		//Start the Binary Search
@@ -123,14 +122,16 @@ public class MocMart {
 			mid = low + (high - low) / 2;
 			binSer += mid + " ";
 			
-			if (products[mid] != null && products[mid].getItemNum() == itemID) {
+			if (products[mid].getItemNum() == itemID) {
 				System.out.println(binSer.trim() + " )");
 				System.out.printf("    Item #%d (%s)\n", products[mid].getItemNum(), products[mid].getItemName());
 				System.out.printf("    Price            :  $%.2f%n", products[mid].getItemPrice());
 				System.out.printf("    Current Quantity :  %d%n", products[mid].getQuantity());
 				
 				if (sales != null) {
+					
 					for (MocMartSale sale : sales) {
+						
 						if (sale != null) {	
 							int[] items = sale.getItemsPurchased();
 							for (int i = 0; i < items.length - 1; i += 2) {
